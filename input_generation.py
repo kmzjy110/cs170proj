@@ -75,7 +75,10 @@ def gen_matrix(n):
         matrix [randi] [randj] = weight
         matrix [randj] [randi] = weight
         is_connected=check_connected(matrix,n)
-
+    for i in range(n):
+        for j in range(n):
+            if matrix[i][j]==0:
+                matrix[i][j]='x'
 
     return matrix
 
