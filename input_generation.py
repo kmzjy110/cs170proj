@@ -50,7 +50,7 @@ def gen_matrix(n):
                     continue
                 if(ran[1] == float("inf")):
                     ran[1] = 20
-                weight = int(round(random.uniform(ran[0], ran[1]),0))
+                weight = round(random.uniform(ran[0], ran[1]),5)
                 #weight = round(random.uniform(0.00001, 2000000000),5)
                 matrix [i][j] = weight
                 matrix [j] [i] = weight
@@ -64,14 +64,21 @@ def gen_matrix(n):
         randj= int(round(random.uniform(0, n-1),0))
         while(randj==randi):
             randj=int(round(random.uniform(0, n-1),0))
-        weight = round(random.uniform(1, 10), 0)
+
+        ran = get_triangle_inequality_range(matrix, randi, randj, n)
+        if (ran[0] >= ran[1]):
+            continue
+        if (ran[1] == float("inf")):
+            ran[1] = 20
+        weight = round(random.uniform(ran[0], ran[1]), 5)
+
         matrix [randi] [randj] = weight
         matrix [randj] [randi] = weight
         is_connected=check_connected(matrix,n)
 
 
     return matrix
-#returns -1 if it satisfies,
+
 def get_triangle_inequality_range(matrix,i,j,n):
     min_val = 0
     max_val = float("inf")
