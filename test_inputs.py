@@ -23,9 +23,25 @@ def test_inputs(homes, locations, start, matrix):
         
 if __name__ == "__main__":
     global start
-    locations = gen_strings(50)
-    homes = gen_homes(25, locations)
+    loc_size = 200
+    home_size = 100
+    locations = gen_strings(loc_size)
+    homes = gen_homes(home_size, locations)
     start = locations[0]                                                                 # input("Enter Start\n")
     distances = {}
-    matrix = gen_matrix(50)
+    matrix = gen_matrix(loc_size)
     test_inputs(homes, locations, start, matrix)
+    print(len(locations))
+    print(len(homes))
+    for l in locations:
+        print(l,end=" ")
+    print("")
+    for h in homes:
+        print(h,end=" ")
+    print(locations[0])
+    for line in matrix:
+        for el in line:
+            print(el, end=" ")
+        print("")
+
+

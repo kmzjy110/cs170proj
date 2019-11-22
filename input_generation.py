@@ -26,15 +26,11 @@ def gen_strings(n):
                 k=0
             i+=1
             j=0
-strings = gen_strings(200)
-print(strings)
 def gen_homes(n, strings):
     homes = random.choices(strings, k=n)
     homes.sort()
     return homes
 
-homes = gen_homes(100, strings)
-print(homes)
 
 def gen_matrix(n):
     percentage = 0.5
@@ -101,6 +97,7 @@ def check_connected(matrix,n):
     numpy_matrix = numpy.asarray(matrix)
     new_matrix = numpy.asarray(matrix)
     while (k <= n):
+        #print(k)
         new_matrix = numpy.matmul(new_matrix, numpy_matrix)
         k += 1
 
@@ -115,8 +112,6 @@ def check_connected(matrix,n):
             is_connected = True
             return is_connected
     return is_connected
-matrix = gen_matrix(5)
-i=0
-while(i<5):
-    print(matrix[i])
-    i+=1
+
+
+
