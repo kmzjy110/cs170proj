@@ -12,7 +12,7 @@ def test_inputs(homes, locations, start, matrix):
             assert matrix[i][j] == matrix[j][i], "the matrix is not symmetric"
             if not isinstance(matrix[i][j], str):
                 for k in range(len(matrix)):
-                    if not isinstance(matrix[i][k], str) and not isinstance(matrix[k][j], str):
+                    if matrix[i][k]!='x' and matrix[k][j] != 'x':
                         assert matrix[i][k] + matrix[k][j] >= matrix[i][j], "triangle inequality: " + str(matrix[i][k]) + " " + str(matrix[k][j]) + " >= " + str(matrix[i][j])
 
     #i, i must always be 'x'
