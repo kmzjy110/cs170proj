@@ -2,7 +2,7 @@ import random
 import numpy
 def gen_strings(n):
     strings=[]
-    nums = list(map(chr, range(48,58)))
+    nums = list(map(chr, range(49,58)))
     lower = list(map(chr, range(97,123)))
     upper = list(map(chr, range(65,91)))
     strings.extend(nums)
@@ -27,7 +27,7 @@ def gen_strings(n):
             i+=1
             j=0
 def gen_homes(n, strings):
-    homes = random.choices(strings, k=n)
+    homes = random.sample(strings, k=n)
     homes.sort()
     return homes
 

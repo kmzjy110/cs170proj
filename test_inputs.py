@@ -23,8 +23,8 @@ def test_inputs(homes, locations, start, matrix):
         
 if __name__ == "__main__":
     global start
-    loc_size = 200
-    home_size = 100
+    loc_size = 50
+    home_size = 25
     locations = gen_strings(loc_size)
     homes = gen_homes(home_size, locations)
     start = locations[0]                                                                 # input("Enter Start\n")
@@ -38,10 +38,9 @@ if __name__ == "__main__":
     print("")
     for h in homes:
         print(h,end=" ")
+    print("")
     print(locations[0])
     for line in matrix:
         for el in line:
             print(el, end=" ")
         print("")
-
-
