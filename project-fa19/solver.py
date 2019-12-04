@@ -27,6 +27,35 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
     """
     pass
 
+def partition(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix,  k, shortest_paths):
+    partition_centers = [0]
+    clusters  = [[] for i in range(k)]
+    for i in range(k-1):
+        max_distance = 0
+        max_center = -1
+        for j in range(len(list_of_locations)):
+            total_distance = 0
+            for x in partition_centers:
+                total_distance += shortest_paths[j][x]
+            if total_distance>max_distance:
+                max_center = j
+        partition_centers.append(max_center)
+    for j in range(len(list_of_locations)):
+        min_distance = shortest_paths[j][x]
+        min_center_index = 0
+        for i in range(k):
+            if shortest_paths[j][partition_centers[i]]<min_distance:
+                min_distance = shortest_paths[j][partition_centers[i]]
+                min_center_index=i
+        clusters[min_center_index].append(j)
+    return clusters
+
+
+
+
+
+
+
 """
 ======================================================================
    No need to change any code below this line
