@@ -2,7 +2,7 @@ import random
 import numpy
 def gen_strings(n):
     strings=[]
-    nums = list(map(chr, range(48,58)))
+    nums = list(map(chr, range(49,58)))
     lower = list(map(chr, range(97,123)))
     upper = list(map(chr, range(65,91)))
     strings.extend(nums)
@@ -26,34 +26,33 @@ def gen_strings(n):
                 k=0
             i+=1
             j=0
-strings = gen_strings(200)
-print(strings)
 def gen_homes(n, strings):
-    homes = random.choices(strings, k=n)
+    homes = random.sample(strings, k=n)
     homes.sort()
     return homes
 
-homes = gen_homes(100, strings)
-print(homes)
 
 def gen_matrix(n):
     percentage = 0.5
     matrix = [[0 for i in range(n)] for i in range(n)]
     i = 0
+    prevPoints = set()
+    points = []
     while(i<n):
+        points.append((random.randint(0, 1000000000), random.randint(0, 1000000000)))
         j=i+1
         matrix[i][i]=0
         while(j<n):
             if(random.uniform(0,1)<percentage):
-                ran = get_triangle_inequality_range(matrix,i,j,n)
-                if(ran[0]>=ran[1]):
-                    continue
-                if(ran[1] == float("inf")):
-                    ran[1] = 20
-                weight = round(random.uniform(ran[0], ran[1]),5)
-                #weight = round(random.uniform(0.00001, 2000000000),5)
-                matrix [i][j] = weight
-                matrix [j] [i] = weight
+                # ran = get_triangle_inequality_range(matrix,i,j,n)
+                # if(ran[0]>=ran[1]):
+                #     continue
+                # if(ran[1] == float("inf")):
+                #     ran[1] = 20
+                # weight = round(random.uniform(ran[0], ran[1]),5)
+                # #weight = round(random.uniform(0.00001, 2000000000),5)
+                matrix [i][j] = 1
+                matrix [j] [i] = 1
             j+=1
 
         i+=1
@@ -65,35 +64,39 @@ def gen_matrix(n):
         while(randj==randi):
             randj=int(round(random.uniform(0, n-1),0))
 
-        ran = get_triangle_inequality_range(matrix, randi, randj, n)
-        if (ran[0] >= ran[1]):
-            continue
-        if (ran[1] == float("inf")):
-            ran[1] = 20
-        weight = round(random.uniform(ran[0], ran[1]), 5)
+        # ran = get_triangle_inequality_range(matrix, randi, randj, n)
+        # if (ran[0] >= ran[1]):
+        #     continue
+        # if (ran[1] == float("inf")):
+        #     ran[1] = 20
+        # weight = round(random.uniform(ran[0], ran[1]), 5)
 
-        matrix [randi] [randj] = weight
-        matrix [randj] [randi] = weight
+
+        matrix [randi] [randj] = 1
+        matrix [randj] [randi] = 1
         is_connected=check_connected(matrix,n)
     for i in range(n):
         for j in range(n):
             if matrix[i][j]==0:
                 matrix[i][j]='x'
+            if matrix[i][j]==1:
+                matrix[i][j] = round(((points[i][0] + points[j][0])**2 + (points[i][1] + points[j][1])) ** (1/2), 5)
 
     return matrix
 
-def get_triangle_inequality_range(matrix,i,j,n):
-    min_val = 0
-    max_val = float("inf")
-    for y in range(n):
-        weight_u = matrix[i][y]
-        weight_v = matrix[y][j]
-        if(weight_u ==0 or weight_v ==0):
-            continue
-        min_val = max(min_val, abs(weight_u-weight_v))
-        max_val = min(max_val, weight_u+weight_v)
+# def get_triangle_inequality_range(matrix,i,j,n):
+#     min_val = 0
+#     max_val = float("inf")
+#     for y in range(n):
+#         weight_u = matrix[i][y]
+#         weight_v = matrix[y][j]
+#         if(weight_u ==0 or weight_v ==0):
+#             continue
+#         else:
+#             min_val = max(min_val, abs(weight_u-weight_v))
+#             max_val = min(max_val, weight_u+weight_v)
 
-    return [min_val, max_val]
+#     return [min_val, max_val]
 
 
 def check_connected(matrix,n):
@@ -101,6 +104,7 @@ def check_connected(matrix,n):
     numpy_matrix = numpy.asarray(matrix)
     new_matrix = numpy.asarray(matrix)
     while (k <= n):
+        #print(k)
         new_matrix = numpy.matmul(new_matrix, numpy_matrix)
         k += 1
 
@@ -115,8 +119,6 @@ def check_connected(matrix,n):
             is_connected = True
             return is_connected
     return is_connected
-matrix = gen_matrix(5)
-i=0
-while(i<5):
-    print(matrix[i])
-    i+=1
+
+
+

@@ -135,4 +135,20 @@ if __name__ == "__main__":
                 distances[(s, end)] = val
     answer = main(locations, homes)
     print("answer:", answer.path, "; energy:", answer.energy, "; homes sent:", answer.homes)
-    
+
+
+
+def all_pairs_shortest_path (adjacency, num_locations):
+    dist = [[[0 for k in range(num_locations)] for j in range(num_locations)    ] for i in range(num_locations +1)]
+    for i in range(num_locations):
+        for j in range(num_locations):
+            if(adjacency[i][j]=='x'):
+                dist[0][i][j] = float("inf")
+            else:
+                dist[0][i][j] = adjacency[i][j]
+    for k in range(1, num_locations + 1):
+        for i in range(num_locations):
+            for j in range(num_locations):
+                dist[k][i][j] = min(dist[k-1][i][k]+ dist [k-1][k][j], dist[k-1][i][j])
+
+    return dist[num_locations]
