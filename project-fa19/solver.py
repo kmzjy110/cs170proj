@@ -25,7 +25,38 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
         A dictionary mapping drop-off location to a list of homes of TAs that got off at that particular location
         NOTE: both outputs should be in terms of indices not the names of the locations themselves
     """
-    pass
+
+
+    """
+Clustering Algorithm
+Clustering
+We will use the following approximation algorithm to partition the homes into the m clusters. 
+A cluster is a set of nearby locations from where one dropoff will occur.
+Set m to zero. 
+Keep incrementing m by one until the maximum average distance between points within clusters is less than h, where h is some predetermined heuristic value. We will call k-CLUSTER from the textbook to cluster the homes, setting k to m. 
+Optimal Point
+Next, within each cluster, we will find the optimal access point — where we will drop off all the people who have homes. 
+To solve the optimal access point problem, we will use the Floyd-Warshall ALL-PAIRS algorithm from the textbook to compute the shortest path between any two points. We will then iterate through all the points to find the point with the minimum distance to each home. 
+TSP on the optimal points
+Finally, using the optimal access points calculated above, we can run a modified version of the MST TSP approximation algorithm to find a tour in which we can visit each access point. 
+
+    """
+
+    clusters = # a list of clusters [[0, 1, 2, 3]]
+
+    graph = adjacency_matrix_to_graph(adjacency_matrix)
+    edge_list = adjacency_matrix_to_edge_list(adjacency_matrix)
+    shortest = dict(nx.floyd_warshall(graph))
+
+# OPTIMAL POINT 
+def optimal_point(clusters):
+    """ Given a list of clusters, return a list where element i denotes the shortest path to the end 
+    >>> optimal_point([]
+    """
+    answer = []
+    for cluster in clusters:
+        answer.append(min([point for point in cluster], key = lambda point: sum([shortest[point][other] for other in cluster])))
+    return answer
 
 def partition(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix,  k, shortest_paths):
     partition_centers = [0]
