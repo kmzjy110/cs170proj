@@ -22,6 +22,26 @@ def gen_output(input_file):
     file.write(list_houses[len(list_houses)-1] + '\n')
     file.close()
 
+def all_pairs_shortest_path (adjacency, num_locations):
+    dist = [[[0 for k in range(num_locations)] for j in range(num_locations)    ] for i in range(num_locations +1)]
+    for i in range(num_locations):
+        for j in range(num_locations):
+            if(adjacency[i][j]=='x'):
+                dist[0][i][j] = float("inf")
+            else:
+                dist[0][i][j] = adjacency[i][j]
+    for k in range(1, num_locations + 1):
+        for i in range(num_locations):
+            for j in range(num_locations):
+                dist[k][i][j] = min(dist[k-1][i][k]+ dist [k-1][k][j], dist[k-1][i][j])
+
+    return dist[num_locations]
+
+
+
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parsing arguments')
     parser.add_argument('--all', action='store_true', help='If specified, the input validator is run on all files in the input directory. Else, it is run on just the given input file.')
