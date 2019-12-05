@@ -38,6 +38,7 @@ def gen_output(input_file):
     else:
         onlyfiles = [f for f in listdir('inputs/') if isfile(join('inputs/', f))]
         onlyfiles.sort()
+        onlyfiles = onlyfiles[len(onlyfiles)//3: 2*len(onlyfiles)//3]
         numfiles = len(onlyfiles)
         counter = 1
         for fl in onlyfiles:

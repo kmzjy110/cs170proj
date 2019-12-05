@@ -15,7 +15,6 @@ from student_utils import *
 # Given the steiner tree, return a path that traverses all the edges twice
 # Similar to MST idea from travelling salesman
 def make_path_of(tree):
-
     pass
 
 # OPTIMAL POINT 
@@ -107,11 +106,12 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
 
     # 3. APPROXIMATE PATH THROUGH OPTIMAL POINTS
     steiner_tree = nx.steiner_tree(graph, optimal_points)
+    nx.s
     path_to_go = make_path_of(steiner_tree)
 
     # 4. CREATE ANSWER DICTIONARY
     final_map = {optimal_point: cluster for optimal_point, cluster in zip(optimal_points, clusters)}
-    #DROPPING PEOPLE OFF?
+
     return path_to_go, final_map
 
 
