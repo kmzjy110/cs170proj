@@ -16,11 +16,10 @@ from disjoint_set import DisjointSet
 
 # Given the steiner tree, return a path that traverses all the edges twice
 # Similar to MST idea from travelling salesman
-def make_path_of(tree, graph, starting_car_location):
+def make_path_of(tree, graph, starting_car_location, shortest_edges):
     
     edges = list(nx.dfs_edges(tree, source = starting_car_location))
     
-    shortest_edges = dict(nx.algorithms.shortest_paths.all_pairs_shortest_path(graph))
     first = edges.pop(0)
     answer = [first[0], first[1]]
     for edge in edges:
@@ -111,6 +110,7 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
     # 0. SET UP GRAPH
     graph, adj_message = adjacency_matrix_to_graph(adjacency_matrix)
     shortest = dict(nx.floyd_warshall(graph))
+    shortest_edges = dict(nx.algorithms.shortest_paths.all_pairs_shortest_path(graph))
 
 
     potential_answers = []
@@ -138,7 +138,7 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
         else:
             steiner_tree = nx.algorithms.approximation.steinertree.steiner_tree(graph, terminal_nodes)
 
-            path_to_go = make_path_of(steiner_tree, graph, start)
+            path_to_go = make_path_of(steiner_tree, graph, start, shortest_edges)
 
         # 4. CREATE ANSWER DICTIONARY
         final_map = {optimal_point: [x for x in cluster if x in values] for optimal_point, cluster in zip(optimal_points, clusters)}
