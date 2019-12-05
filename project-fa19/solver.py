@@ -12,41 +12,10 @@ from student_utils import *
 ======================================================================
 """
 
-def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[]):
-    """
-    Write your algorithm here.
-    Input:
-        list_of_locations: A list of locations such that node i of the graph corresponds to name at index i of the list
-        list_of_homes: A list of homes
-        starting_car_location: The name of the starting location for the car
-        adjacency_matrix: The adjacency matrix from the input file
-    Output:
-        A list of locations representing the car path
-        A dictionary mapping drop-off location to a list of homes of TAs that got off at that particular location
-        NOTE: both outputs should be in terms of indices not the names of the locations themselves
-    """
-
-
-    """
-Clustering Algorithm
-Clustering
-We will use the following approximation algorithm to partition the homes into the m clusters. 
-A cluster is a set of nearby locations from where one dropoff will occur.
-Set m to zero. 
-Keep incrementing m by one until the maximum average distance between points within clusters is less than h, where h is some predetermined heuristic value. We will call k-CLUSTER from the textbook to cluster the homes, setting k to m. 
-Optimal Point
-Next, within each cluster, we will find the optimal access point — where we will drop off all the people who have homes. 
-To solve the optimal access point problem, we will use the Floyd-Warshall ALL-PAIRS algorithm from the textbook to compute the shortest path between any two points. We will then iterate through all the points to find the point with the minimum distance to each home. 
-TSP on the optimal points
-Finally, using the optimal access points calculated above, we can run a modified version of the MST TSP approximation algorithm to find a tour in which we can visit each access point. 
-
-    """
-
-    clusters = # a list of clusters [[0, 1, 2, 3]]
-
-    graph = adjacency_matrix_to_graph(adjacency_matrix)
-    edge_list = adjacency_matrix_to_edge_list(adjacency_matrix)
-    shortest = dict(nx.floyd_warshall(graph))
+# Given the steiner tree, return a path that traverses all the edges twice
+# Similar to MST idea from travelling salesman
+def make_path_of(tree):
+    pass
 
 # OPTIMAL POINT 
 def optimal_point(clusters):
@@ -58,7 +27,8 @@ def optimal_point(clusters):
         answer.append(min([point for point in cluster], key = lambda point: sum([shortest[point][other] for other in cluster])))
     return answer
 
-def partition(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix,  k, shortest_paths):
+#K partition
+def partition(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, k, shortest_paths):
     partition_centers = [0]
     clusters  = [[] for i in range(k)]
     for i in range(k-1):
@@ -81,10 +51,66 @@ def partition(list_of_locations, list_of_homes, starting_car_location, adjacency
         clusters[min_center_index].append(j)
     return clusters
 
+def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[]):
+    """
+    Write your algorithm here.
+    Input:
+        list_of_locations: A list of locations such that node i of the graph corresponds to name at index i of the list
+        list_of_homes: A list of homes
+        starting_car_location: The name of the starting location for the car
+        adjacency_matrix: The adjacency matrix from the input file
+    Output:
+        A list of locations representing the car path
+        A dictionary mapping drop-off location to a list of homes of TAs that got off at that particular location
+        NOTE: both outputs should be in terms of indices not the names of the locations themselves
+    """
 
 
+    """
+    Clustering Algorithm:
 
+    Clustering
+        We will use the following approximation algorithm to partition the homes into the m clusters. 
+        A cluster is a set of nearby locations from where one dropoff will occur.
+        Set m to zero. 
+        Keep incrementing m by one until the maximum average distance between points 
+        within clusters is less than h, where h is some predetermined heuristic value. 
+        We will call k-CLUSTER from the textbook to cluster the homes, setting k to m. 
+    Optimal Point
+        Next, within each cluster, we will find the optimal access point — where we will drop off
+        all the people who have homes. 
+        To solve the optimal access point problem, we will use the Floyd-Warshall ALL-PAIRS 
+        algorithm from the textbook to compute the shortest path between any two points. 
+        We will then iterate through all the points to find the point with the minimum distance 
+        to each home. 
+    Steiner Tree
+        Finally, using the optimal access points calculated above, 
+        we can create a steiner tree and run that
+    Optimization
+        We can potentially optimize the return path from the steiner tree by taking the shortest path
+        between adjacent homes if such a path is available.  
 
+    """
+
+    # 0. SET UP GRAPH
+    graph = adjacency_matrix_to_graph(adjacency_matrix)
+    edge_list = adjacency_matrix_to_edge_list(adjacency_matrix)
+    shortest = dict(nx.floyd_warshall(graph))
+
+    # 1. CLUSTER
+    clusters = partition(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, k, shortest)
+
+    # 2. FIND OPTIMAL POINTS
+    optimal_points = optimal_point(clusters)
+
+    # 3. APPROXIMATE PATH THROUGH OPTIMAL POINTS
+    steiner_tree = nx.steiner_tree(graph, optimal_points)
+    path_to_go = make_path_of(steiner_tree)
+
+    # 4. CREATE ANSWER DICTIONARY
+    final_map = {optimal_point: cluster for optimal_point, cluster in zip(optimal_points, clusters)}
+    
+    return path_to_go, final_map
 
 
 """
