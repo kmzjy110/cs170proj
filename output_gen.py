@@ -12,6 +12,11 @@ from solver import solve, convertToFile
 from os import listdir
 from os.path import isfile, join
 
+def file_len(fname):
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
 
 def gen_output(input_file):
     if input_file != 'all':
@@ -32,6 +37,7 @@ def gen_output(input_file):
         output_validator.validate_output(inputfilename, outputfilename)
     else:
         onlyfiles = [f for f in listdir('inputs/') if isfile(join('inputs/', f))]
+        onlyfiles.sort()
         numfiles = len(onlyfiles)
         counter = 1
         for fl in onlyfiles:
@@ -39,13 +45,16 @@ def gen_output(input_file):
             inputfilename = 'inputs/' + fl
             outputfilename = 'outputs/' + fl.split('.')[0] + '.out'
             input_data = utils.read_file(inputfilename)
-            num_of_locations, num_houses, list_locations, list_houses, starting_car_location, adjacency_matrix = data_parser(input_data)
-            print(inputfilename + ' file parsed')
-            path, dropoff_mapping = solve(list_locations, list_houses, starting_car_location, adjacency_matrix)
-            print('converting to file')
-            convertToFile(path, dropoff_mapping, outputfilename, list_locations)
-            output_validator.validate_output(inputfilename, outputfilename)
-            counter += 1
+            if file_len(outputfilename) == 3:
+                print("skipped")
+            else:
+                num_of_locations, num_houses, list_locations, list_houses, starting_car_location, adjacency_matrix = data_parser(input_data)
+                print(inputfilename + ' file parsed')
+                path, dropoff_mapping = solve(list_locations, list_houses, starting_car_location, adjacency_matrix)
+                print('converting to file')
+                convertToFile(path, dropoff_mapping, outputfilename, list_locations)
+                output_validator.validate_output(inputfilename, outputfilename)
+                counter += 1
 
 
 def all_pairs_shortest_path (adjacency, num_locations):
