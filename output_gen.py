@@ -11,6 +11,7 @@ import output_validator
 from solver import solve, convertToFile
 from os import listdir
 from os.path import isfile, join
+from multiprocessing import Pool
 
 def file_len(fname):
     with open(fname) as f:
@@ -45,8 +46,9 @@ def gen_output(input_file):
             inputfilename = 'inputs/' + fl
             outputfilename = 'outputs/' + fl.split('.')[0] + '.out'
             input_data = utils.read_file(inputfilename)
-            if file_len(outputfilename) == 3:
+            if file_len(outputfilename) != 3:
                 print("skipped")
+                counter += 1
             else:
                 num_of_locations, num_houses, list_locations, list_houses, starting_car_location, adjacency_matrix = data_parser(input_data)
                 print(inputfilename + ' file parsed')
