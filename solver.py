@@ -111,6 +111,8 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
     graph, adj_message = adjacency_matrix_to_graph(adjacency_matrix)
     shortest = dict(nx.floyd_warshall(graph))
     shortest_edges = dict(nx.algorithms.shortest_paths.all_pairs_shortest_path(graph))
+    values = homes_to_index.values()
+
 
 
     potential_answers = []
@@ -118,7 +120,6 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
         # 1. CLUSTER
         print(k)
         clusters = greedy_clusters(graph, list_of_homes, homes_to_index, shortest, k)
-        values = homes_to_index.values()
         assert all([any([val in cluster for val in values]) for cluster in clusters]), "Greedy clusters failed"
 
         # 2. FIND OPTIMAL POINTS
@@ -149,12 +150,16 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
     #DROPPING PEOPLE OFF?
         potential_answers.append([path_to_go, final_map])
 
+    potential_answers.append(([start], {start: values}))
+
     print('finding best answer')
     #drop all at start
     # path_to_go = [starting_car_location]
     # dropoff_mapping = {}
 
-    answer = min(potential_answers, key = lambda answer: cost_of_solution(graph, answer[0], answer[1]))
+    answer_index = min(list(range(len(potential_answers))), key = lambda i: cost_of_solution(graph, potential_answers[i][0], potential_answers[i][1]))
+    print("K VALUE: ", answer_index)
+    answer = potential_answers[answer_index]
     return answer[0], answer[1]
 
 
