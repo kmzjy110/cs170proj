@@ -8,19 +8,45 @@ import networkx as nx
 import numpy as np
 from student_utils import *
 import output_validator
+from solver import solve, convertToFile
+from os import listdir
+from os.path import isfile, join
 
 
 def gen_output(input_file):
-    input_data = utils.read_file(input_file)
-    num_of_locations, num_houses, list_locations, list_houses, starting_car_location, adjacency_matrix = data_parser(input_data)
-    file = open('200.out','w') 
-    file.write(str(starting_car_location) + '\n')
-    file.write(str(1)  + '\n')
-    file.write(str(starting_car_location) + ' ')
-    for loc in list_houses[:len(list_houses)-1]:
-        file.write(loc + ' ')
-    file.write(list_houses[len(list_houses)-1] + '\n')
-    file.close()
+    if input_file != 'all':
+        inputfilename = 'inputs/' + input_file + '.in'
+        outputfilename = 'outputs/' + input_file + '.out'
+        input_data = utils.read_file(inputfilename)
+        num_of_locations, num_houses, list_locations, list_houses, starting_car_location, adjacency_matrix = data_parser(input_data)
+        path, dropoff_mapping = solve(list_locations, list_houses, starting_car_location, adjacency_matrix)
+        convertToFile(path, dropoff_mapping, outputfilename, list_locations)
+        # file = open('200.out','w') 
+        # file.write(str(starting_car_location) + '\n')
+        # file.write(str(1)  + '\n')
+        # file.write(str(starting_car_location) + ' ')
+        # for loc in list_houses[:len(list_houses)-1]:
+        #     file.write(loc + ' ')
+        # file.write(list_houses[len(list_houses)-1] + '\n')
+        # file.close()
+        output_validator.validate_output(inputfilename, outputfilename)
+    else:
+        onlyfiles = [f for f in listdir('inputs/') if isfile(join('inputs/', f))]
+        numfiles = len(onlyfiles)
+        counter = 1
+        for fl in onlyfiles:
+            print('progress: ' + str(counter) + ' out of ' + str(numfiles))
+            inputfilename = 'inputs/' + fl
+            outputfilename = 'outputs/' + fl.split('.')[0] + '.out'
+            input_data = utils.read_file(inputfilename)
+            num_of_locations, num_houses, list_locations, list_houses, starting_car_location, adjacency_matrix = data_parser(input_data)
+            print(inputfilename + ' file parsed')
+            path, dropoff_mapping = solve(list_locations, list_houses, starting_car_location, adjacency_matrix)
+            print('converting to file')
+            convertToFile(path, dropoff_mapping, outputfilename, list_locations)
+            output_validator.validate_output(inputfilename, outputfilename)
+            counter += 1
+
 
 def all_pairs_shortest_path (adjacency, num_locations):
     dist = [[[0 for k in range(num_locations)] for j in range(num_locations)    ] for i in range(num_locations +1)]
@@ -50,4 +76,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
     input_file = args.input
     gen_output(input_file)
-    output_validator.validate_output(input_file, '200.out')

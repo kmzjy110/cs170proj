@@ -5,7 +5,7 @@ sys.path.append('../..')
 import argparse
 import utils
 from networkx.algorithms import approximation
-from wqu import *
+# from wqu import *
 from student_utils import *
 from disjoint_set import DisjointSet
 """
@@ -60,8 +60,9 @@ def greedy_clusters(graph, homes, homes_to_index, shortest, k):
     for i in range(len(homes)):
         quick_union.find(i)
 
+    # print(list(quick_union.itersets()))
     # Greedy combine pairs together until all the homes are together
-    while len(list(quick_union.itersets())) > 1:
+    while len(list(quick_union.itersets())) > k:
         curr = pairs.pop(0)
         quick_union.union(curr[0], curr[1])
 
@@ -115,27 +116,43 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
     potential_answers = []
     for k in range(1, len(list_of_homes)):
         # 1. CLUSTER
+        print(k)
         clusters = greedy_clusters(graph, list_of_homes, homes_to_index, shortest, k)
         values = homes_to_index.values()
         assert all([any([val in cluster for val in values]) for cluster in clusters]), "Greedy clusters failed"
 
         # 2. FIND OPTIMAL POINTS
+        # print(len(clusters))
+        # print(clusters)
         optimal_points = optimal_point(clusters, shortest)
 
         assert all([optimal_points[i] in clusters[i] for i in range(len(optimal_points))]), "Optimal point failed"
 
         # 3. APPROXIMATE PATH THROUGH OPTIMAL POINTS
+        # print(list_of_locations)
+        # print(terminal_nodes)
 
         terminal_nodes = optimal_points + [start]
-        steiner_tree = nx.algorithms.approximation.steinertree.steiner_tree(graph, terminal_nodes)
+        if len(optimal_points) == 1 and optimal_points[0] == start:
+            path_to_go = [start]
+        else:
+            steiner_tree = nx.algorithms.approximation.steinertree.steiner_tree(graph, terminal_nodes)
 
-        path_to_go = make_path_of(steiner_tree, graph, start)
+            path_to_go = make_path_of(steiner_tree, graph, start)
 
         # 4. CREATE ANSWER DICTIONARY
         final_map = {optimal_point: [x for x in cluster if x in values] for optimal_point, cluster in zip(optimal_points, clusters)}
+
+        # print(path_to_go)
+        # print(final_map)
     
     #DROPPING PEOPLE OFF?
         potential_answers.append([path_to_go, final_map])
+
+    print('finding best answer')
+    #drop all at start
+    # path_to_go = [starting_car_location]
+    # dropoff_mapping = {}
 
     answer = min(potential_answers, key = lambda answer: cost_of_solution(graph, answer[0], answer[1]))
     return answer[0], answer[1]
