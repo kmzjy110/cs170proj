@@ -15,6 +15,7 @@ from student_utils import *
 # Given the steiner tree, return a path that traverses all the edges twice
 # Similar to MST idea from travelling salesman
 def make_path_of(tree):
+
     pass
 
 # OPTIMAL POINT 
@@ -28,21 +29,22 @@ def optimal_point(clusters):
     return answer
 
 #K partition
-def partition(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, k, shortest_paths):
-    partition_centers = [0]
+def partition(graph, k, shortest_paths):
+    nodes = list(graph.nodes)
+    partition_centers = [nodes[0]]
     clusters  = [[] for i in range(k)]
     for i in range(k-1):
         max_distance = 0
         max_center = -1
-        for j in range(len(list_of_locations)):
+        for j in nodes:
             total_distance = 0
             for x in partition_centers:
                 total_distance += shortest_paths[j][x]
             if total_distance>max_distance:
                 max_center = j
         partition_centers.append(max_center)
-    for j in range(len(list_of_locations)):
-        min_distance = shortest_paths[j][x]
+    for j in nodes:
+        min_distance = float("inf")
         min_center_index = 0
         for i in range(k):
             if shortest_paths[j][partition_centers[i]]<min_distance:
@@ -109,7 +111,7 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
 
     # 4. CREATE ANSWER DICTIONARY
     final_map = {optimal_point: cluster for optimal_point, cluster in zip(optimal_points, clusters)}
-    
+    #DROPPING PEOPLE OFF?
     return path_to_go, final_map
 
 
