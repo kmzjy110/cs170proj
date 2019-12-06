@@ -88,7 +88,115 @@ def greedy_clusters(graph, homes, homes_to_index, shortest, k):
             home_to_cluster[closest_home].append(node)
 
     return clusters_answer
+
+def cost(tour):
+    return sum([shortest[tour[i]][tour[i + 1]] for i in range(len(tour) - 1)])
     
+def local_search(tour, shortest):
+    """optimize finding an efficient tour """
+    times = 0
+    while True:
+        choices = list(possibilities(tour, shortest))
+        times += 1
+        if not choices:
+            break
+        possible = min(choices, key = cost)
+        if cost(possible) + 1 > cost(tour):
+            break
+        tour = possible
+
+    return tour
+ 
+def squash(lst):
+    answer = []
+    for x in lst:
+        answer.append(x[0])
+    answer.append(lst[-1][1])
+    return answer
+
+def possibilities(tour, shortest):
+    """ Return all potentials solution in the neighborhood of the tour """
+    edges = [[tour[i], tour[i + 1]] for i in range(len(tour) - 1)]
+
+    for i in range(len(edges)):
+        for j in range(i + 1, len(edges)):
+            for k in range(j + 1, len(edges)):
+                
+                possibility = [edges[d] for d in range(len(edges)) if d != i and d != k and d != j]
+                #print(edges[i], edges[j], edges[k])
+                vertices = edges[i] + edges[j] + edges[k]
+                #print("Vertex", vertices)
+                for permutation in matchings(vertices):
+                    if is_valid(permutation):
+                        #print("perm", permutation)
+                        f = reorder(possibility + [[permutation[i], permutation[i + 1]] for i in [0, 2, 4]])
+                        if f:
+                            #print('squashed', f, tour)
+                            yield squash(f)
+
+def reorder(pairs):
+    """ Given a list of pairs, reorder them such that adjacent pairs go in order """
+    #print("re", pairs)
+    answer = [pairs.pop(0)]
+    while pairs:
+        i = 0
+        try:
+            while pairs[i][0] != answer[-1][1] and pairs[i][1] != answer[-1][1]:
+                i += 1
+            curr = pairs.pop(i)
+            if curr[0] == answer[-1][1]:
+                answer.append(curr[:])
+            else:
+                answer.append([curr[1], curr[0]])
+        except IndexError:
+            return False
+    return answer
+
+def matchings(vertices):
+    if len(vertices) == 2:
+        yield vertices
+        return
+    first = vertices.pop()
+    for i in range(len(vertices)):
+        call = vertices[:]
+        pair = [call.pop(i), first]
+        for answer in matchings(call):
+            yield answer + pair            
+    
+
+def extrapolate_tour(tour):
+    edges = [(tour[i], tour[i + 1]) for i in range(len(tour) - 1)]
+    answer = []
+    for edge in edges:
+        answer.extend(shortest_edges[edge[0]][edge[1]][:-1])
+    return answer + shortest_edges[tour[-1]][tour[0]][:-1]
+
+def is_valid(lst):
+    # print("checking validy of " + str(lst))
+    if lst[1] == lst[2] and lst[0] == lst[3]:
+        return False
+    if lst[0] == lst[5] and lst[1] == lst[4]:
+        return False
+    if lst[2] == lst[5] and lst[3] == lst[4]:
+        return False
+
+    if lst[0] == lst[2] and lst[1] == lst[3]:
+        return False
+    if lst[1] == lst[5] and lst[0] == lst[4]:
+        return False
+    if lst[3] == lst[5] and lst[2] == lst[4]:
+        return False
+
+    return all([lst[i] != lst[i + 1] for i in [0, 2, 4]]) and len(set(lst)) > 3
+
+def naive_order(homes):
+    answer = [homes.pop(0)]
+    while homes:
+        closest_index = min(range(len(homes)), key = lambda i: shortest[answer[-1]][homes[i]])
+        answer.append(homes.pop(closest_index))
+    return answer
+
+
 
 def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[]):
     """
@@ -109,13 +217,16 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
 
     # 0. SET UP GRAPH
     graph, adj_message = adjacency_matrix_to_graph(adjacency_matrix)
+    global shortest
     shortest = dict(nx.floyd_warshall(graph))
+    global shortest_edges
     shortest_edges = dict(nx.algorithms.shortest_paths.all_pairs_shortest_path(graph))
+    
     values = homes_to_index.values()
 
 
 
-    potential_answers = []
+    potential_answers, my = [], []
     for k in range(1, len(list_of_homes)):
         # 1. CLUSTER
         print(k)
@@ -141,6 +252,43 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
 
             path_to_go = make_path_of(steiner_tree, graph, start, shortest_edges)
 
+
+            if k >= 2:
+                naive_ordering = naive_order(list(optimal_points)) 
+                # print(naive_ordering)
+                naive_ordering += [naive_ordering[0]]
+                only_opt = extrapolate_tour(local_search(naive_ordering + [naive_ordering[0]], shortest))
+
+                assert all([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)]), str([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)])
+
+                opt_i = min(range(len(only_opt)), key = lambda i: shortest[only_opt[i]][start])
+                if start not in only_opt:
+                    # print('before', only_opt)
+                    only_opt = shortest_edges[start][only_opt[opt_i]][:-1] + only_opt[opt_i:] + only_opt[:opt_i] + shortest_edges[only_opt[opt_i]][start]
+                    # print(start, only_opt)
+                else:
+                    p = only_opt.index(start)
+                    only_opt = only_opt[p:] + only_opt[:p + 1]
+                assert all([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)]), str([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)])
+
+                
+                if cost(path_to_go) > cost(only_opt):
+                    # print("WE BETTER", only_opt)
+                    path_to_go = only_opt
+                
+        
+
+        # if k:
+        #     print("________________")
+        #     print("PAth", path_to_go)
+        #     normal_path = local_search(path_to_go, shortest)
+        #     print(normal_path)
+        #     if cost(path_to_go) > cost(normal_path):
+        #         print("Nomral BETTER")
+        #         path_to_go = normal_path
+            
+
+
         # 4. CREATE ANSWER DICTIONARY
         final_map = {optimal_point: [x for x in cluster if x in values] for optimal_point, cluster in zip(optimal_points, clusters)}
 
@@ -157,9 +305,10 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
     # path_to_go = [starting_car_location]
     # dropoff_mapping = {}
 
-    answer_index = min(list(range(len(potential_answers))), key = lambda i: cost_of_solution(graph, potential_answers[i][0], potential_answers[i][1]))
+    answer_index = min(list(range(len(potential_answers))), key = lambda i: cost_of_solution(graph, potential_answers[i][0], potential_answers[i][1])[0])
     print("K VALUE: ", answer_index)
     answer = potential_answers[answer_index]
+    print(cost_of_solution(graph, answer[0], answer[1]))
     return answer[0], answer[1]
 
 
