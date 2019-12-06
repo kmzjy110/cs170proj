@@ -32,13 +32,13 @@ def make_path_of(tree, graph, starting_car_location, shortest_edges):
     
 
 # OPTIMAL POINT 
-def optimal_point(clusters, shortest):
+def optimal_point(clusters, shortest, values):
     """ Given a list of clusters, return a list where element i denotes the shortest path to the end 
     >>> optimal_point([]
     """
     answer = []
     for cluster in clusters:
-        answer.append(min([point for point in cluster], key = lambda point: sum([shortest[point][other] for other in cluster])))
+        answer.append(min([point for point in cluster], key = lambda point: sum([shortest[point][other] for other in [x for x in cluster if x in values]])))
     return answer
 
 
@@ -236,7 +236,7 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
         # 2. FIND OPTIMAL POINTS
         # print(len(clusters))
         # print(clusters)
-        optimal_points = optimal_point(clusters, shortest)
+        optimal_points = optimal_point(clusters, shortest, values)
 
         assert all([optimal_points[i] in clusters[i] for i in range(len(optimal_points))]), "Optimal point failed"
 
@@ -253,28 +253,28 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
             path_to_go = make_path_of(steiner_tree, graph, start, shortest_edges)
 
 
-            if k >= 2:
-                naive_ordering = naive_order(list(optimal_points)) 
-                # print(naive_ordering)
-                naive_ordering += [naive_ordering[0]]
-                only_opt = extrapolate_tour(local_search(naive_ordering + [naive_ordering[0]], shortest))
+            # if k >= 2:
+            #     naive_ordering = naive_order(list(optimal_points)) 
+            #     # print(naive_ordering)
+            #     naive_ordering += [naive_ordering[0]]
+            #     only_opt = extrapolate_tour(local_search(naive_ordering + [naive_ordering[0]], shortest))
 
-                assert all([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)]), str([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)])
+            #     assert all([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)]), str([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)])
 
-                opt_i = min(range(len(only_opt)), key = lambda i: shortest[only_opt[i]][start])
-                if start not in only_opt:
-                    # print('before', only_opt)
-                    only_opt = shortest_edges[start][only_opt[opt_i]][:-1] + only_opt[opt_i:] + only_opt[:opt_i] + shortest_edges[only_opt[opt_i]][start]
-                    # print(start, only_opt)
-                else:
-                    p = only_opt.index(start)
-                    only_opt = only_opt[p:] + only_opt[:p + 1]
-                assert all([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)]), str([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)])
+            #     opt_i = min(range(len(only_opt)), key = lambda i: shortest[only_opt[i]][start])
+            #     if start not in only_opt:
+            #         # print('before', only_opt)
+            #         only_opt = shortest_edges[start][only_opt[opt_i]][:-1] + only_opt[opt_i:] + only_opt[:opt_i] + shortest_edges[only_opt[opt_i]][start]
+            #         # print(start, only_opt)
+            #     else:
+            #         p = only_opt.index(start)
+            #         only_opt = only_opt[p:] + only_opt[:p + 1]
+            #     assert all([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)]), str([graph.has_edge(only_opt[i], only_opt[i + 1]) for i in range(len(only_opt) - 1)])
 
                 
-                if cost(path_to_go) > cost(only_opt):
-                    # print("WE BETTER", only_opt)
-                    path_to_go = only_opt
+            #     if cost(path_to_go) > cost(only_opt):
+            #         # print("WE BETTER", only_opt)
+            #         path_to_go = only_opt
                 
         
 
