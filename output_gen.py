@@ -45,6 +45,7 @@ def gen_output(input_file):
         onlyfiles = [f for f in listdir('inputs/') if isfile(join('inputs/', f))]
         onlyfiles.sort()
         onlyfiles = onlyfiles[len(onlyfiles)//3: 2*len(onlyfiles)//3]
+        print(onlyfiles)
         numfiles = len(onlyfiles)
         counter = 1
         for fl in onlyfiles:
@@ -52,7 +53,8 @@ def gen_output(input_file):
             inputfilename = 'inputs/' + fl
             outputfilename = 'outputs/' + fl.split('.')[0] + '.out'
             input_data = utils.read_file(inputfilename)
-            if file_len(outputfilename) != 3:
+
+            if False:#file_len(outputfilename) != 3:
                 print("skipped")
                 counter += 1
             else:

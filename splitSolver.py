@@ -11,8 +11,8 @@ numfiles = len(onlyfiles)
 def solveAll(file):
     gen_output(file)
 
-left = 0 #harry make this 1/3, sohum make this 2/3
-right = len(onlyfiles) * 1 / 3 # harry make this 1 (len(onlyfiles))
+left = len(onlyfiles)//3 #harry make this 1/3, sohum make this 2/3
+right = 2*len(onlyfiles)//3
 onlyfiles = onlyfiles[left:right]
 
 poolObj = Pool(processes=50)
