@@ -2,11 +2,14 @@ The two main methods to run are output_gen.py and splitSolver.py.
 
 For these methods to work you must have all the input files in the folder "inputs", and have the folder "outputs" created.
 
-For output_gen.py, you can run either a single file or all files in the "inputs" folder:
+For output_gen.py, you can run either a single file or all files in the "inputs" folder
+Single file:
 ```
 python3 output_gen.py 20_50
 ```
 This takes in inputs/20_50.in and puts a solution in outputs/20_50.out. (Please note that there is no '.in' in the input to output_gen.py!)
+
+All files:
 ```
 python3 output_gen.py all
 ```
