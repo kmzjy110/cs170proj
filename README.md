@@ -2,6 +2,12 @@ The two main methods to run are output_gen.py and splitSolver.py.
 
 ***For these methods to work you must have all the input files in the folder "inputs", and have the folder "outputs" created.***
 
+**You will need the python libraries 'numpy' and 'disjoint-set'. To do this setup, run:**
+```
+pip3 install numpy
+pip3 install disjoint-set
+```
+
 ### output_gen.py
 For output_gen.py, you can run either a single file or all files in the "inputs" folder.
 
