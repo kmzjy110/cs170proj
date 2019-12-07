@@ -24,14 +24,9 @@ def gen_output(input_file):
         inputfilename = 'inputs/' + input_file + '.in'
         outputfilename = 'outputs/' + input_file + '.out'
         input_data = utils.read_file(inputfilename)
-        if file_len(outputfilename) != 3:
-            print("skipped")
-            counter += 1
-        else:
-            input_data = utils.read_file(inputfilename)
-            num_of_locations, num_houses, list_locations, list_houses, starting_car_location, adjacency_matrix = data_parser(input_data)
-            path, dropoff_mapping = solve(list_locations, list_houses, starting_car_location, adjacency_matrix)
-            convertToFile(path, dropoff_mapping, outputfilename, list_locations)
+        num_of_locations, num_houses, list_locations, list_houses, starting_car_location, adjacency_matrix = data_parser(input_data)
+        path, dropoff_mapping = solve(list_locations, list_houses, starting_car_location, adjacency_matrix)
+        convertToFile(path, dropoff_mapping, outputfilename, list_locations)
         # file = open('200.out','w') 
         # file.write(str(starting_car_location) + '\n')
         # file.write(str(1)  + '\n')
@@ -45,7 +40,6 @@ def gen_output(input_file):
         onlyfiles = [f for f in listdir('inputs/') if isfile(join('inputs/', f))]
         onlyfiles.sort()
         onlyfiles = onlyfiles[len(onlyfiles)//3: 2*len(onlyfiles)//3]
-        print(onlyfiles)
         numfiles = len(onlyfiles)
         counter = 1
         for fl in onlyfiles:
@@ -53,18 +47,13 @@ def gen_output(input_file):
             inputfilename = 'inputs/' + fl
             outputfilename = 'outputs/' + fl.split('.')[0] + '.out'
             input_data = utils.read_file(inputfilename)
-
-            if False:#file_len(outputfilename) != 3:
-                print("skipped")
-                counter += 1
-            else:
-                num_of_locations, num_houses, list_locations, list_houses, starting_car_location, adjacency_matrix = data_parser(input_data)
-                print(inputfilename + ' file parsed')
-                path, dropoff_mapping = solve(list_locations, list_houses, starting_car_location, adjacency_matrix)
-                print('converting to file')
-                convertToFile(path, dropoff_mapping, outputfilename, list_locations)
-                output_validator.validate_output(inputfilename, outputfilename)
-                counter += 1
+            num_of_locations, num_houses, list_locations, list_houses, starting_car_location, adjacency_matrix = data_parser(input_data)
+            print(inputfilename + ' file parsed')
+            path, dropoff_mapping = solve(list_locations, list_houses, starting_car_location, adjacency_matrix)
+            print('converting to file')
+            convertToFile(path, dropoff_mapping, outputfilename, list_locations)
+            output_validator.validate_output(inputfilename, outputfilename)
+            counter += 1
 
 
 def all_pairs_shortest_path (adjacency, num_locations):

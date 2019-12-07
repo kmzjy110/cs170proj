@@ -13,7 +13,9 @@ def solveAll(file):
 
 left = len(onlyfiles)//3 #harry make this 1/3, sohum make this 2/3
 right = 2*len(onlyfiles)//3
+threads = 50
+
 onlyfiles = onlyfiles[left:right]
 
-poolObj = Pool(processes=50)
+poolObj = Pool(processes=threads)
 poolObj.map(solveAll, [filename.split('.')[0] for filename in onlyfiles])
